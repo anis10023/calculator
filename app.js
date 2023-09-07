@@ -55,8 +55,16 @@ equal.addEventListener("click", (e) => {
 
 numBtn.forEach((number) => {
   number.addEventListener("click", (e) => {
-    noleak();
     let value = number.textContent;
+    noleak();
+    if ((numArray.length === 2 && total > 0) || total < 0) {
+      output.innerHTML = "&nbsp";
+      noleak();
+    }
+    if ((numArray.length === 0 && total > 0) || total < 0) {
+      output.innerHTML = "&nbsp";
+      noleak();
+    }
     calcLog.textContent += `${" " + value + " "}`;
     output.textContent += value;
   });
@@ -78,32 +86,24 @@ function positive_Negative() {
 }
 
 function percentage_operation() {
-  parseInt((calcLog.textContent /= 100));
+  parseInt((calcLog.textContent += " ÷ 100"));
   parseInt((output.textContent /= 100));
 }
 
 function divide_operation() {
-  calcLog.textContent += "÷";
-  output.innerHTML = "&nbsp";
-  numArray.push("÷");
+  calcLogic("÷");
 }
 
 function multiply_operation() {
-  calcLog.textContent += "×";
-  output.innerHTML = "&nbsp";
-  numArray.push("×");
+  calcLogic("×");
 }
 
 function minus_operation() {
-  calcLog.textContent += "-";
-  output.innerHTML = "&nbsp";
-  numArray.push("-");
+  calcLogic("-");
 }
 
 function add_operation() {
-  calcLog.textContent += "+";
-  output.innerHTML = "&nbsp";
-  numArray.push("+");
+  calcLogic("+");
 }
 
 function float_operation() {
@@ -112,8 +112,6 @@ function float_operation() {
 }
 
 function equal_operation() {
-  log = parseFloat(calcLog.textContent) + " ";
-  output.textContent = log;
   if (numArray[1] == "+") {
     total = operators["+"](numArray[0], numArray[2]);
   }
@@ -127,32 +125,7 @@ function equal_operation() {
     total = operators["÷"](numArray[0], numArray[2]);
   }
   numArray = [];
-  return (output.textContent = total);
-}
-
-//Save values on array to later calcaulate
-function num_() {
-  let str = output.textContent;
-  num = parseFloat(str);
-  numArray.push(num);
-}
-
-// Function to maintain calculator styling
-function changeFontSize(fontvar, element) {
-  let currentFont = element.style.fontSize.replace("px", "");
-  element.style.fontSize = parseFloat(currentFont) - parseFloat(fontvar) + "px";
-}
-
-function noleak() {
-  if (parseFloat(output.textContent) < 0.0000001) {
-    output.textContent = Math.trunc(parseFloat(output.textContent));
-  }
-  if (calcLog.clientWidth > 231) {
-    changeFontSize(0.5, calcLog);
-  }
-  if (output.clientWidth > 200) {
-    changeFontSize(4.5, output);
-  }
+  output.textContent = total;
 }
 
 var operators = {
@@ -169,3 +142,47 @@ var operators = {
     return a / b;
   },
 };
+
+//Logic for storing & evaluating values
+
+function calcLogic(oper) {
+  if (numArray.length === 3) {
+    total = operators[oper](numArray[0], numArray[2]);
+    console.log(total);
+    output.textContent = total;
+    numArray = [];
+    calcLog.textContent += oper;
+    numArray.push(total);
+    numArray.push(oper);
+  } else {
+    calcLog.textContent += oper;
+    output.innerHTML = "&nbsp";
+    numArray.push(oper);
+  }
+}
+
+//Save values on array to later calcaulate
+function num_() {
+  let str = output.textContent;
+  num = parseFloat(str);
+  numArray.push(num);
+}
+
+// Maintain calculator styling
+function changeFontSize(fontvar, element) {
+  let currentFont = element.style.fontSize.replace("px", "");
+  element.style.fontSize = parseFloat(currentFont) - parseFloat(fontvar) + "px";
+}
+
+function noleak() {
+  if (parseFloat(output.textContent) < 0.0000001) {
+    output.textContent = Math.trunc(parseFloat(output.textContent));
+    calcLog.innerHTML = "&nbsp";
+  }
+  if (calcLog.clientWidth > 231) {
+    changeFontSize(0.5, calcLog);
+  }
+  if (output.clientWidth > 200) {
+    changeFontSize(4.5, output);
+  }
+}
