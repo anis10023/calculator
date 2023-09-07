@@ -11,6 +11,9 @@ const minus = document.querySelector(".minus");
 const add = document.querySelector(".add");
 const float = document.querySelector(".float");
 const equal = document.querySelector(".equal");
+// let total = 0;
+let numArray = [];
+let total = 0;
 
 //Initialising edge case styles
 output.style.fontSize = "64px";
@@ -24,18 +27,45 @@ percentage.addEventListener("click", (e) => {
   noleak();
 });
 float.addEventListener("click", (e) => float_operation());
+add.addEventListener("click", (e) => {
+  num_();
+  add_operation();
+  console.log(numArray);
+});
+minus.addEventListener("click", (e) => {
+  num_();
+  minus_operation();
+  console.log(numArray);
+});
+multiply.addEventListener("click", (e) => {
+  num_();
+  multiply_operation();
+  console.log(numArray);
+});
+divide.addEventListener("click", (e) => {
+  num_();
+  divide_operation();
+  console.log(numArray);
+});
+equal.addEventListener("click", (e) => {
+  num_();
+  equal_operation();
+  console.log(numArray);
+});
 
 numBtn.forEach((number) => {
   number.addEventListener("click", (e) => {
     noleak();
     let value = number.textContent;
-    calcLog.textContent += parseFloat(value);
-    output.textContent += parseFloat(value);
+    calcLog.textContent += `${" " + value + " "}`;
+    output.textContent += value;
   });
 });
 
 //All operator functions
 function clear_operation() {
+  numArray = [];
+  total = 0;
   calcLog.innerHTML = "&nbsp";
   output.innerHTML = "&nbsp";
   output.style.fontSize = "64px";
@@ -43,7 +73,7 @@ function clear_operation() {
 }
 
 function positive_Negative() {
-  parseInt((calcLog.textContent *= -1));
+  parseInt((calcLog.textContent += "× - 1"));
   parseInt((output.textContent *= -1));
 }
 
@@ -52,18 +82,28 @@ function percentage_operation() {
   parseInt((output.textContent /= 100));
 }
 
-function divide_operation(a, b) {}
+function divide_operation() {
+  calcLog.textContent += "÷";
+  output.innerHTML = "&nbsp";
+  numArray.push("÷");
+}
 
-function multiply_operation(arr) {}
+function multiply_operation() {
+  calcLog.textContent += "×";
+  output.innerHTML = "&nbsp";
+  numArray.push("×");
+}
 
-function minus_operation(arr) {}
+function minus_operation() {
+  calcLog.textContent += "-";
+  output.innerHTML = "&nbsp";
+  numArray.push("-");
+}
 
-function add_operation(arr) {
-  const add = arr.reduce(
-    total,
-    (number) => (total += number),
-    output.textContent
-  );
+function add_operation() {
+  calcLog.textContent += "+";
+  output.innerHTML = "&nbsp";
+  numArray.push("+");
 }
 
 function float_operation() {
@@ -71,7 +111,31 @@ function float_operation() {
   output.textContent += ".";
 }
 
-function equal_operation(arr) {}
+function equal_operation() {
+  log = parseFloat(calcLog.textContent) + " ";
+  output.textContent = log;
+  if (numArray[1] == "+") {
+    total = operators["+"](numArray[0], numArray[2]);
+  }
+  if (numArray[1] == "-") {
+    total = operators["-"](numArray[0], numArray[2]);
+  }
+  if (numArray[1] == "×") {
+    total = operators["×"](numArray[0], numArray[2]);
+  }
+  if (numArray[1] == "÷") {
+    total = operators["÷"](numArray[0], numArray[2]);
+  }
+  numArray = [];
+  return (output.textContent = total);
+}
+
+//Save values on array to later calcaulate
+function num_() {
+  let str = output.textContent;
+  num = parseFloat(str);
+  numArray.push(num);
+}
 
 // Function to maintain calculator styling
 function changeFontSize(fontvar, element) {
@@ -80,8 +144,8 @@ function changeFontSize(fontvar, element) {
 }
 
 function noleak() {
-  if (parseFloat(output.textContent) < 1) {
-    parseFloat(output.textContent).toFixed(6);
+  if (parseFloat(output.textContent) < 0.0000001) {
+    output.textContent = Math.trunc(parseFloat(output.textContent));
   }
   if (calcLog.clientWidth > 231) {
     changeFontSize(0.5, calcLog);
@@ -90,3 +154,18 @@ function noleak() {
     changeFontSize(4.5, output);
   }
 }
+
+var operators = {
+  "+": function (a, b) {
+    return a + b;
+  },
+  "-": function (a, b) {
+    return a - b;
+  },
+  "×": function (a, b) {
+    return a * b;
+  },
+  "÷": function (a, b) {
+    return a / b;
+  },
+};
