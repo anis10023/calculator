@@ -6,11 +6,12 @@ body{
     display: flex;
     flex-direction: column;
     justify-content: center;
+    overflow-y: hidden;
 }
 
-.container{
+.container {
     align-self: center;
-    margin:  180px 0;
+    margin:  145px 0;
 }
 
 .calc-body{
@@ -19,13 +20,22 @@ body{
     align-items: start;
     align-self: center;
     justify-content: start;
-    padding: 20px 10px 40px;
+    padding: 20px 15px 40px;
     border-radius: 15px;
     background-color: black;
+    box-shadow: rgba(0, 0, 0, 0.56) 0px 22px 70px 4px;
+}
+
+.calc-log{
+    font-size: 1rem;
+    color: white;
+    align-self: flex-end;
+    margin-bottom: 10px 0;
+    font-weight: 300;
 }
 
 .output{
-    font-size: 3rem;
+    font-size: 64px;
     color: white;
     align-self: flex-end;
     margin-bottom: 10px 0;
@@ -37,11 +47,11 @@ button {
     background-color: #333333;
     border: none;
     color: white;
-    font-size: 1rem;
+    font-size: 1.5rem;
     height: 60px;
     width: 60px;
     padding: 25px;
-    font-size: 1.6rem;
+    font-size: 1.5rem;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -50,9 +60,6 @@ button {
 
 button:active{
     transform: translateY(2px);
-}
-
-.last{
 }
 
 .last .zero {
@@ -67,19 +74,23 @@ button:active{
 }
 
 .operator {
-    background-color: #FD9503
+    background-color: #FD9503;
+    font-size: 1.8rem;
 }
 
 .top{
     background-color: #A5A5A5;
     color: black;
+    font-size: 1.4rem;
 }
 
 footer {
-    background-color: beige;
+    background-color: lightgrey;
+    color: black;
     text-align: center;
     padding: 5px;
     font-size: 1rem;
-    font-weight: 500;
-    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-weight: 600;
+    font-family: monospace;
+
 }
