@@ -24,8 +24,6 @@ body{
     border-radius: 15px;
     background-color: black;
     box-shadow: rgba(0, 0, 0, 0.56) 0px 22px 70px 4px;
-    width: 270px;
-    overflow-y: scroll;
 }
 
 .calc-log{
@@ -34,7 +32,6 @@ body{
     align-self: flex-end;
     margin-bottom: 10px 0;
     font-weight: 300;
-    overflow-y: scroll;
 }
 
 .output{
@@ -43,7 +40,6 @@ body{
     align-self: flex-end;
     margin-bottom: 10px 0;
     font-weight: 300;
-    overflow-y: scroll;
 }
 
 button {

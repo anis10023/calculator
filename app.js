@@ -11,9 +11,15 @@ const minus = document.querySelector(".minus");
 const add = document.querySelector(".add");
 const float = document.querySelector(".float");
 const equal = document.querySelector(".equal");
-// let total = 0;
+
+// Initialise storing variables
 let numArray = [];
 let total = 0;
+let isChain = false;
+
+let num1 = 0
+let num2 = 0;
+let o = "";
 
 //Initialising edge case styles
 output.style.fontSize = "64px";
@@ -50,27 +56,37 @@ divide.addEventListener("click", (e) => {
 equal.addEventListener("click", (e) => {
   num_();
   equal_operation();
+  noleak();
   console.log(numArray);
 });
 
 numBtn.forEach((number) => {
   number.addEventListener("click", (e) => {
-    let value = number.textContent;
+    let value = parseFloat(number.textContent);
+    console.log(numArray);
+
+    // Handles events when user chains same operation
+    if ((numArray.length === 2 && isChain == true && total > 0) || total < 0) {
+      output.innerHTML = "&nbsp";
+    }
+
+    //Handles events when new calculation started without using clear button
+    if ((numArray.length === 0 && isChain == false && total > 0) || total < 0) {
+      output.innerHTML = "&nbsp";
+      calcLog.innerHTML = "&nbsp";
+      total = 0;
+    }
     noleak();
-    if ((numArray.length === 2 && total > 0) || total < 0) {
-      output.innerHTML = "&nbsp";
-      noleak();
-    }
-    if ((numArray.length === 0 && total > 0) || total < 0) {
-      output.innerHTML = "&nbsp";
-      noleak();
-    }
-    calcLog.textContent += `${" " + value + " "}`;
+    calcLog.textContent += value;
     output.textContent += value;
   });
 });
 
 //All operator functions
+function operate (num1,o,num2) {
+    operators[o](num1,num2);
+}
+
 function clear_operation() {
   numArray = [];
   total = 0;
@@ -125,6 +141,7 @@ function equal_operation() {
     total = operators["÷"](numArray[0], numArray[2]);
   }
   numArray = [];
+  isChain = false;
   output.textContent = total;
 }
 
@@ -141,31 +158,41 @@ var operators = {
   "÷": function (a, b) {
     return a / b;
   },
+  ".": function (num) {
+    return (num / 100).toFixed(1);
+  },
 };
 
 //Logic for storing & evaluating values
 
 function calcLogic(oper) {
   if (numArray.length === 3) {
+    // When chain is long enough to calculate
     total = operators[oper](numArray[0], numArray[2]);
-    console.log(total);
     output.textContent = total;
-    numArray = [];
     calcLog.textContent += oper;
+    numArray = [];
+    isChain = true;
     numArray.push(total);
     numArray.push(oper);
   } else {
-    calcLog.textContent += oper;
-    output.innerHTML = "&nbsp";
-    numArray.push(oper);
+    output.innerHTML = "&nbsp"; //clear
+    calcLog.textContent += oper; 
+    numArray.push(oper); //pushes oper
+    isChain = true; 
   }
+  console.log(numArray);
 }
 
 //Save values on array to later calcaulate
 function num_() {
   let str = output.textContent;
-  num = parseFloat(str);
-  numArray.push(num);
+  let num = parseFloat(str);
+  if (numArray.length == 3){
+    return
+  } else {
+    numArray.push(num);
+  }
 }
 
 // Maintain calculator styling
@@ -175,8 +202,10 @@ function changeFontSize(fontvar, element) {
 }
 
 function noleak() {
-  if (parseFloat(output.textContent) < 0.0000001) {
-    output.textContent = Math.trunc(parseFloat(output.textContent));
+  if (
+    decimalCount(parseFloat(output.textContent)) > 8
+  ) {
+    output.textContent = Math.round(parseFloat(output.textContent));
     calcLog.innerHTML = "&nbsp";
   }
   if (calcLog.clientWidth > 231) {
@@ -186,3 +215,16 @@ function noleak() {
     changeFontSize(4.5, output);
   }
 }
+
+const decimalCount = num => {
+   // Convert to String
+   const numStr = String(num);
+   // String Contains Decimal
+   if (numStr.includes('.')) {
+      return numStr.split('.')[1].length;
+   };
+   // String Does Not Contain Decimal
+   return 0;
+}
+
+console.log(operators["."](9));
