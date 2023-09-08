@@ -12,14 +12,15 @@ const add = document.querySelector(".add");
 const float = document.querySelector(".float");
 const equal = document.querySelector(".equal");
 
-// Initialise storing variables
-let numArray = [];
-let total = 0;
-let isChain = false;
-
-let num1 = 0
-let num2 = 0;
-let o = "";
+// Initialise variables
+let total = undefined;
+let num1 = undefined;
+let num2 = undefined;
+let temp = 0;
+let numPadState = 0;
+let oper_ = "";
+let prevOper_ = "";
+let display = parseFloat(output.textContent);
 
 //Initialising edge case styles
 output.style.fontSize = "64px";
@@ -27,6 +28,7 @@ calcLog.style.fontSize = "16px";
 
 //Event Listeners
 clear.addEventListener("click", (e) => clear_operation());
+//! Find a way to limit operation click after every number is inputted
 posiNeg.addEventListener("click", (e) => positive_Negative());
 percentage.addEventListener("click", (e) => {
   percentage_operation();
@@ -34,62 +36,101 @@ percentage.addEventListener("click", (e) => {
 });
 float.addEventListener("click", (e) => float_operation());
 add.addEventListener("click", (e) => {
-  num_();
-  add_operation();
-  console.log(numArray);
+  noleak();
+  other_operators("+");
+  calcLog.textContent += "+";
+  console.log("total= " + total);
+  console.log("num1= " + num1);
+  console.log("num2= " + num2);
+  console.log("oper_= " + oper_);
 });
 minus.addEventListener("click", (e) => {
-  num_();
-  minus_operation();
-  console.log(numArray);
+  noleak();
+  calcLog.textContent += "-";
+  other_operators("-");
+  console.log("total= " + total);
+  console.log("num1= " + num1);
+  console.log("num2= " + num2);
+  console.log("oper_= " + oper_);
 });
 multiply.addEventListener("click", (e) => {
-  num_();
-  multiply_operation();
-  console.log(numArray);
+  noleak();
+  calcLog.textContent += "×";
+  other_operators("×");
+  console.log("total= " + total);
+  console.log("num1= " + num1);
+  console.log("num2= " + num2);
+  console.log("oper_= " + oper_);
 });
 divide.addEventListener("click", (e) => {
-  num_();
-  divide_operation();
-  console.log(numArray);
+  noleak();
+  calcLog.textContent += "÷";
+  other_operators("÷");
+  console.log("total= " + total);
+  console.log("num1= " + num1);
+  console.log("num2= " + num2);
+  console.log("oper_= " + oper_);
 });
 equal.addEventListener("click", (e) => {
-  num_();
-  equal_operation();
+  //   calcLog.textContent += "+";
   noleak();
-  console.log(numArray);
+  equal_operation();
+  console.log("total= " + total);
+  console.log("num1= " + num1);
+  console.log("num2= " + num2);
+  console.log("oper_= " + oper_);
 });
 
 numBtn.forEach((number) => {
   number.addEventListener("click", (e) => {
-    let value = parseFloat(number.textContent);
-    console.log(numArray);
-
-    // Handles events when user chains same operation
-    if ((numArray.length === 2 && isChain == true && total > 0) || total < 0) {
-      output.innerHTML = "&nbsp";
-    }
-
-    //Handles events when new calculation started without using clear button
-    if ((numArray.length === 0 && isChain == false && total > 0) || total < 0) {
-      output.innerHTML = "&nbsp";
-      calcLog.innerHTML = "&nbsp";
-      total = 0;
-    }
     noleak();
+    prevOper_ = oper_;
+    if (numPadState == 1) {
+      numPadState = 0;
+      output.innerHTML = "&nbsp";
+    }
+    let value = number.textContent;
     calcLog.textContent += value;
     output.textContent += value;
   });
 });
 
 //All operator functions
-function operate (num1,o,num2) {
-    operators[o](num1,num2);
+function operate(o, num1, num2) {
+  return operators[o](num1, num2);
+}
+
+function other_operators(sign) {
+  numPadState = 1;
+  //! Find a way to make prevOper_ execute first
+  if (oper_ != prevOper_ && prevOper_ != "") {
+    sign = prevOper_;
+  }
+  if (!num1 && !num2) {
+    num1 = parseInt(output.textContent);
+    oper_ = sign;
+  } else if ((!num2 && num1 > 0) || num1 < 0) {
+    num2 = parseInt(output.textContent);
+    oper_ = sign;
+    total = operate(prevOper_, num1, num2);
+    num1 = total;
+    output.textContent = total;
+  } else {
+    num1 = total;
+    num2 = parseFloat(output.textContent);
+    oper_ = sign;
+    total = operate(prevOper_, num1, num2);
+    output.textContent = total;
+  }
 }
 
 function clear_operation() {
-  numArray = [];
   total = 0;
+  num1 = 0;
+  num2 = 0;
+  oper_ = "";
+  numPadState = 0;
+  operaterPadState = 0;
   calcLog.innerHTML = "&nbsp";
   output.innerHTML = "&nbsp";
   output.style.fontSize = "64px";
@@ -106,43 +147,23 @@ function percentage_operation() {
   parseInt((output.textContent /= 100));
 }
 
-function divide_operation() {
-  calcLogic("÷");
-}
-
-function multiply_operation() {
-  calcLogic("×");
-}
-
-function minus_operation() {
-  calcLogic("-");
-}
-
-function add_operation() {
-  calcLogic("+");
-}
-
 function float_operation() {
   calcLog.textContent += ".";
   output.textContent += ".";
 }
 
 function equal_operation() {
-  if (numArray[1] == "+") {
-    total = operators["+"](numArray[0], numArray[2]);
+  operaterPadState = 1;
+  if (oper_ != prevOper_) {
+    num1 = total;
+    num2 = parseFloat(output.textContent);
+    total = operate(prevOper_, num1, num2);
+    output.textContent = total;
+  } else {
+    num2 = parseFloat(output.textContent);
+    total = operate(oper_, num1, num2);
+    output.textContent = total;
   }
-  if (numArray[1] == "-") {
-    total = operators["-"](numArray[0], numArray[2]);
-  }
-  if (numArray[1] == "×") {
-    total = operators["×"](numArray[0], numArray[2]);
-  }
-  if (numArray[1] == "÷") {
-    total = operators["÷"](numArray[0], numArray[2]);
-  }
-  numArray = [];
-  isChain = false;
-  output.textContent = total;
 }
 
 var operators = {
@@ -163,38 +184,6 @@ var operators = {
   },
 };
 
-//Logic for storing & evaluating values
-
-function calcLogic(oper) {
-  if (numArray.length === 3) {
-    // When chain is long enough to calculate
-    total = operators[oper](numArray[0], numArray[2]);
-    output.textContent = total;
-    calcLog.textContent += oper;
-    numArray = [];
-    isChain = true;
-    numArray.push(total);
-    numArray.push(oper);
-  } else {
-    output.innerHTML = "&nbsp"; //clear
-    calcLog.textContent += oper; 
-    numArray.push(oper); //pushes oper
-    isChain = true; 
-  }
-  console.log(numArray);
-}
-
-//Save values on array to later calcaulate
-function num_() {
-  let str = output.textContent;
-  let num = parseFloat(str);
-  if (numArray.length == 3){
-    return
-  } else {
-    numArray.push(num);
-  }
-}
-
 // Maintain calculator styling
 function changeFontSize(fontvar, element) {
   let currentFont = element.style.fontSize.replace("px", "");
@@ -202,29 +191,27 @@ function changeFontSize(fontvar, element) {
 }
 
 function noleak() {
-  if (
-    decimalCount(parseFloat(output.textContent)) > 8
-  ) {
+  if (decimalCount(parseFloat(output.textContent)) > 8) {
     output.textContent = Math.round(parseFloat(output.textContent));
     calcLog.innerHTML = "&nbsp";
   }
   if (calcLog.clientWidth > 231) {
-    changeFontSize(0.5, calcLog);
+    changeFontSize(5 / 100, calcLog);
   }
   if (output.clientWidth > 200) {
-    changeFontSize(4.5, output);
+    changeFontSize(5 / 100, output);
   }
 }
 
-const decimalCount = num => {
-   // Convert to String
-   const numStr = String(num);
-   // String Contains Decimal
-   if (numStr.includes('.')) {
-      return numStr.split('.')[1].length;
-   };
-   // String Does Not Contain Decimal
-   return 0;
-}
+const decimalCount = (num) => {
+  // Convert to String
+  const numStr = String(num);
+  // String Contains Decimal
+  if (numStr.includes(".")) {
+    return numStr.split(".")[1].length;
+  }
+  // String Does Not Contain Decimal
+  return 0;
+};
 
-console.log(operators["."](9));
+console.log(operators["+"](123, 10));
