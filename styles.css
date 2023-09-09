@@ -6,13 +6,12 @@ body{
     display: flex;
     flex-direction: column;
     justify-content: center;
-    overflow: hidden;
+    overflow-y: hidden;
 }
 
 .container {
     align-self: center;
     margin:  158px 0;
-    height: 100%;
 }
 
 .calc-body{
