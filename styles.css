@@ -12,6 +12,8 @@ body{
 .container {
     align-self: center;
     margin:  158px 0;
+    height: 100%;
+
 }
 
 .calc-body{
