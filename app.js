@@ -30,7 +30,7 @@ calcLog.style.fontSize = "16px";
 //Event Listeners
 clear.addEventListener("click", (e) => {
   clear_operation();
-  if (calcLog.textContent == "NaN") {
+  if (calcLog.textContent == "NaN" || "0") {
     clear.textContent = "AC";
     total = 0;
     num1 = 0;
