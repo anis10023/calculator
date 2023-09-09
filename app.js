@@ -16,11 +16,12 @@ const equal = document.querySelector(".equal");
 let total = undefined;
 let num1 = undefined;
 let num2 = undefined;
-let temp = 0;
+
 let numPadState = 0;
 let oper_ = "";
 let prevOper_ = "";
-let display = parseFloat(output.textContent);
+
+let order = [];
 
 //Initialising edge case styles
 output.style.fontSize = "64px";
@@ -28,7 +29,6 @@ calcLog.style.fontSize = "16px";
 
 //Event Listeners
 clear.addEventListener("click", (e) => clear_operation());
-//! Find a way to limit operation click after every number is inputted
 posiNeg.addEventListener("click", (e) => positive_Negative());
 percentage.addEventListener("click", (e) => {
   percentage_operation();
@@ -38,7 +38,7 @@ float.addEventListener("click", (e) => float_operation());
 add.addEventListener("click", (e) => {
   noleak();
   other_operators("+");
-  calcLog.textContent += "+";
+  calcLog.textContent += " + ";
   console.log("total= " + total);
   console.log("num1= " + num1);
   console.log("num2= " + num2);
@@ -46,7 +46,7 @@ add.addEventListener("click", (e) => {
 });
 minus.addEventListener("click", (e) => {
   noleak();
-  calcLog.textContent += "-";
+  calcLog.textContent += " - ";
   other_operators("-");
   console.log("total= " + total);
   console.log("num1= " + num1);
@@ -55,7 +55,7 @@ minus.addEventListener("click", (e) => {
 });
 multiply.addEventListener("click", (e) => {
   noleak();
-  calcLog.textContent += "×";
+  calcLog.textContent += " × ";
   other_operators("×");
   console.log("total= " + total);
   console.log("num1= " + num1);
@@ -64,7 +64,7 @@ multiply.addEventListener("click", (e) => {
 });
 divide.addEventListener("click", (e) => {
   noleak();
-  calcLog.textContent += "÷";
+  calcLog.textContent += " ÷ ";
   other_operators("÷");
   console.log("total= " + total);
   console.log("num1= " + num1);
@@ -72,7 +72,6 @@ divide.addEventListener("click", (e) => {
   console.log("oper_= " + oper_);
 });
 equal.addEventListener("click", (e) => {
-  //   calcLog.textContent += "+";
   noleak();
   equal_operation();
   console.log("total= " + total);
@@ -85,6 +84,7 @@ numBtn.forEach((number) => {
   number.addEventListener("click", (e) => {
     noleak();
     prevOper_ = oper_;
+    order.push("n");
     if (numPadState == 1) {
       numPadState = 0;
       output.innerHTML = "&nbsp";
@@ -102,26 +102,37 @@ function operate(o, num1, num2) {
 
 function other_operators(sign) {
   numPadState = 1;
-  //! Find a way to make prevOper_ execute first
-  if (oper_ != prevOper_ && prevOper_ != "") {
-    sign = prevOper_;
-  }
+  click = true;
+  order.push(sign);
+  console.log(order);
   if (!num1 && !num2) {
-    num1 = parseInt(output.textContent);
+    num1 = parseFloat(output.textContent);
     oper_ = sign;
-  } else if ((!num2 && num1 > 0) || num1 < 0) {
-    num2 = parseInt(output.textContent);
-    oper_ = sign;
-    total = operate(prevOper_, num1, num2);
-    num1 = total;
-    output.textContent = total;
+    prevOper_ = oper_;
   } else {
-    num1 = total;
-    num2 = parseFloat(output.textContent);
-    oper_ = sign;
-    total = operate(prevOper_, num1, num2);
-    output.textContent = total;
+    if (!num2 && !oper_) {
+      oper_ = sign;
+    } else {
+      oper_ = sign;
+      num2 = parseFloat(output.textContent);
+      total = operate(prevOper_, num1, num2);
+      num1 = total;
+      prevOper_ = oper_;
+      output.textContent = total;
+    }
   }
+  if (order[0] == "-" && order[1] == "n") {
+    num1 = num1 * -1;
+  }
+}
+
+function equal_operation() {
+  num2 = parseFloat(output.textContent);
+  total = operate(oper_, num1, num2);
+  num1 = total;
+  num2 = undefined;
+  oper_ = undefined;
+  output.textContent = total;
 }
 
 function clear_operation() {
@@ -131,6 +142,7 @@ function clear_operation() {
   oper_ = "";
   numPadState = 0;
   operaterPadState = 0;
+  order = [];
   calcLog.innerHTML = "&nbsp";
   output.innerHTML = "&nbsp";
   output.style.fontSize = "64px";
@@ -150,20 +162,6 @@ function percentage_operation() {
 function float_operation() {
   calcLog.textContent += ".";
   output.textContent += ".";
-}
-
-function equal_operation() {
-  operaterPadState = 1;
-  if (oper_ != prevOper_) {
-    num1 = total;
-    num2 = parseFloat(output.textContent);
-    total = operate(prevOper_, num1, num2);
-    output.textContent = total;
-  } else {
-    num2 = parseFloat(output.textContent);
-    total = operate(oper_, num1, num2);
-    output.textContent = total;
-  }
 }
 
 var operators = {
@@ -191,8 +189,14 @@ function changeFontSize(fontvar, element) {
 }
 
 function noleak() {
-  if (decimalCount(parseFloat(output.textContent)) > 8) {
-    output.textContent = Math.round(parseFloat(output.textContent));
+  if (decimalCount(parseFloat(output.textContent)) > 6) {
+    output.textContent = "Too many decimals";
+    output.innerHTML = "&nbsp";
+    // output.textContent = Math.trunc(parseFloat(output.textContent));
+    calcLog.innerHTML = "&nbsp";
+  } else if (parseFloat(output.textContent) > 1000000) {
+    output.textContent = "Too big";
+    output.innerHTML = "&nbsp";
     calcLog.innerHTML = "&nbsp";
   }
   if (calcLog.clientWidth > 231) {
