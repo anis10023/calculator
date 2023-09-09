@@ -24,6 +24,7 @@ body{
     border-radius: 15px;
     background-color: black;
     box-shadow: rgba(0, 0, 0, 0.56) 0px 22px 70px 4px;
+    width: 270px;
 }
 
 .calc-log{
@@ -96,4 +97,8 @@ footer {
 }
 .equal{
     flex-grow: 1;
+}
+
+.fa-github{
+    color: #1F3151;
 }

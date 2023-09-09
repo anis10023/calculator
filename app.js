@@ -28,7 +28,23 @@ output.style.fontSize = "64px";
 calcLog.style.fontSize = "16px";
 
 //Event Listeners
-clear.addEventListener("click", (e) => clear_operation());
+clear.addEventListener("click", (e) => {
+  clear_operation();
+  if (calcLog.textContent == "NaN") {
+    clear.textContent = "AC";
+    total = 0;
+    num1 = 0;
+    num2 = 0;
+    oper_ = "";
+    numPadState = 0;
+    order = [];
+    calcLog.innerHTML = "&nbsp";
+    output.innerHTML = "&nbsp";
+    output.style.fontSize = "64px";
+    calcLog.style.fontSize = "16px";
+  }
+  noleak();
+});
 posiNeg.addEventListener("click", (e) => positive_Negative());
 percentage.addEventListener("click", (e) => {
   percentage_operation();
@@ -92,6 +108,9 @@ numBtn.forEach((number) => {
     let value = number.textContent;
     calcLog.textContent += value;
     output.textContent += value;
+    if (output.textContent.includes(value)) {
+      clear.textContent = "C";
+    }
   });
 });
 
@@ -102,7 +121,6 @@ function operate(o, num1, num2) {
 
 function other_operators(sign) {
   numPadState = 1;
-  click = true;
   order.push(sign);
   console.log(order);
   if (!num1 && !num2) {
@@ -136,21 +154,27 @@ function equal_operation() {
 }
 
 function clear_operation() {
-  total = 0;
-  num1 = 0;
-  num2 = 0;
-  oper_ = "";
-  numPadState = 0;
-  operaterPadState = 0;
-  order = [];
-  calcLog.innerHTML = "&nbsp";
-  output.innerHTML = "&nbsp";
-  output.style.fontSize = "64px";
-  calcLog.style.fontSize = "16px";
+  if (clear.textContent == "C" && total != NaN) {
+    clear.textContent = "AC";
+    output.innerHTML = "&nbsp";
+    calcLog.innerHTML = "&nbsp";
+    calcLog.textContent = total;
+  } else {
+    total = 0;
+    num1 = 0;
+    num2 = 0;
+    oper_ = "";
+    numPadState = 0;
+    order = [];
+    calcLog.innerHTML = "&nbsp";
+    output.innerHTML = "&nbsp";
+    output.style.fontSize = "64px";
+    calcLog.style.fontSize = "16px";
+  }
 }
 
 function positive_Negative() {
-  parseInt((calcLog.textContent += "× - 1"));
+  parseInt((calcLog.textContent += " × - 1"));
   parseInt((output.textContent *= -1));
 }
 
@@ -189,32 +213,21 @@ function changeFontSize(fontvar, element) {
 }
 
 function noleak() {
-  if (decimalCount(parseFloat(output.textContent)) > 6) {
-    output.textContent = "Too many decimals";
-    output.innerHTML = "&nbsp";
-    // output.textContent = Math.trunc(parseFloat(output.textContent));
+  if (decimalCount(parseInt(output.textContent)) > 5) {
+    output.innerHTML = Math.round(parseFloat(output.textContent));
     calcLog.innerHTML = "&nbsp";
   } else if (parseFloat(output.textContent) > 1000000) {
-    output.textContent = "Too big";
+    output.textContent = "NaN";
     output.innerHTML = "&nbsp";
     calcLog.innerHTML = "&nbsp";
-  }
-  if (calcLog.clientWidth > 231) {
-    changeFontSize(5 / 100, calcLog);
-  }
-  if (output.clientWidth > 200) {
-    changeFontSize(5 / 100, output);
   }
 }
 
 const decimalCount = (num) => {
-  // Convert to String
   const numStr = String(num);
-  // String Contains Decimal
   if (numStr.includes(".")) {
     return numStr.split(".")[1].length;
   }
-  // String Does Not Contain Decimal
   return 0;
 };
 
