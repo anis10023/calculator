@@ -30,7 +30,7 @@ calcLog.style.fontSize = "16px";
 //Event Listeners
 clear.addEventListener("click", (e) => {
   clear_operation();
-  if (calcLog.textContent == "NaN" || "0") {
+  if (calcLog.textContent == "NaN" || calcLog.textContent == "0") {
     clear.textContent = "AC";
     total = 0;
     num1 = 0;
@@ -141,6 +141,7 @@ function other_operators(sign) {
   }
   if (order[0] == "-" && order[1] == "n") {
     num1 = num1 * -1;
+    order = [];
   }
 }
 
@@ -154,11 +155,11 @@ function equal_operation() {
 }
 
 function clear_operation() {
-  if (clear.textContent == "C" && total != NaN) {
-    clear.textContent = "AC";
+  if (clear.textContent === "C") {
     output.innerHTML = "&nbsp";
     calcLog.innerHTML = "&nbsp";
     calcLog.textContent = total;
+    clear.textContent = "AC";
   } else {
     total = 0;
     num1 = 0;

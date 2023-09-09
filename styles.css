@@ -1,7 +1,7 @@
 body{
     font-family: 'Helvetica Neue', sans-serif;
     height: 100vh;
-    margin: 0;
+    margin: 10px;
     background-color: white;
     display: flex;
     flex-direction: column;
@@ -93,15 +93,18 @@ button:active{
     font-size: 1rem;
     font-weight: 600;
     font-family: monospace;
-    align-self: flex-start;
     border-radius: 5px;
     align-self: flex-start;
-
-}
-.equal{
-    flex-grow: 1;
+    transition: 0.5s;
 }
 
-.fa-github{
-    color: #1F3151;
+.Name-tag a{
+    color: #333333;
 }
+
+.Name-tag:hover{
+    background-color: rgb(236, 236, 236);
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;;
+    color: black;
+}
+
