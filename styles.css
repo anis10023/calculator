@@ -6,12 +6,13 @@ body{
     display: flex;
     flex-direction: column;
     justify-content: center;
-    overflow-y: hidden;
+    overflow: hidden;
 }
 
 .container {
     align-self: center;
     margin:  158px 0;
+    height: 100%;
 }
 
 .calc-body{
@@ -85,7 +86,7 @@ button:active{
     font-size: 1.4rem;
 }
 
-footer {
+.Name-tag {
     background-color: lightgrey;
     color: black;
     text-align: center;
@@ -93,6 +94,9 @@ footer {
     font-size: 1rem;
     font-weight: 600;
     font-family: monospace;
+    align-self: flex-start;
+    border-radius: 5px;
+    align-self: flex-start;
 
 }
 .equal{
