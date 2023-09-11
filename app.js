@@ -13,11 +13,13 @@ const float = document.querySelector(".float");
 const equal = document.querySelector(".equal");
 
 // Initialise variables
-let total = undefined;
-let num1 = undefined;
-let num2 = undefined;
+let total = null;
+let num1 = null;
+let num2 = null;
 
 let numPadState = 0;
+let operatorPadState = 0;
+let equalOperatorPadState = 0;
 let oper_ = "";
 let prevOper_ = "";
 
@@ -28,6 +30,7 @@ output.style.fontSize = "64px";
 calcLog.style.fontSize = "16px";
 
 //Event Listeners
+function clickButton() {}
 clear.addEventListener("click", (e) => {
   clear_operation();
   if (calcLog.textContent == "NaN" || calcLog.textContent == "0") {
@@ -37,6 +40,7 @@ clear.addEventListener("click", (e) => {
     num2 = 0;
     oper_ = "";
     numPadState = 0;
+    operatorPadState = 0;
     order = [];
     calcLog.innerHTML = "&nbsp";
     output.innerHTML = "&nbsp";
@@ -47,14 +51,13 @@ clear.addEventListener("click", (e) => {
 });
 posiNeg.addEventListener("click", (e) => positive_Negative());
 percentage.addEventListener("click", (e) => {
-  percentage_operation();
   noleak();
+  percentage_operation();
 });
 float.addEventListener("click", (e) => float_operation());
 add.addEventListener("click", (e) => {
   noleak();
   other_operators("+");
-  calcLog.textContent += " + ";
   console.log("total= " + total);
   console.log("num1= " + num1);
   console.log("num2= " + num2);
@@ -62,7 +65,6 @@ add.addEventListener("click", (e) => {
 });
 minus.addEventListener("click", (e) => {
   noleak();
-  calcLog.textContent += " - ";
   other_operators("-");
   console.log("total= " + total);
   console.log("num1= " + num1);
@@ -71,7 +73,6 @@ minus.addEventListener("click", (e) => {
 });
 multiply.addEventListener("click", (e) => {
   noleak();
-  calcLog.textContent += " × ";
   other_operators("×");
   console.log("total= " + total);
   console.log("num1= " + num1);
@@ -80,7 +81,6 @@ multiply.addEventListener("click", (e) => {
 });
 divide.addEventListener("click", (e) => {
   noleak();
-  calcLog.textContent += " ÷ ";
   other_operators("÷");
   console.log("total= " + total);
   console.log("num1= " + num1);
@@ -98,9 +98,10 @@ equal.addEventListener("click", (e) => {
 
 numBtn.forEach((number) => {
   number.addEventListener("click", (e) => {
-    noleak();
     prevOper_ = oper_;
     order.push("n");
+    operatorPadState = 1;
+    equalOperatorPadState = 1;
     if (numPadState == 1) {
       numPadState = 0;
       output.innerHTML = "&nbsp";
@@ -111,47 +112,56 @@ numBtn.forEach((number) => {
     if (output.textContent.includes(value)) {
       clear.textContent = "C";
     }
+    noleak();
   });
 });
 
 //All operator functions
 function operate(o, num1, num2) {
-  return operators[o](num1, num2);
+  noleak();
+  return roundResult(operators[o](num1, num2));
 }
 
 function other_operators(sign) {
-  numPadState = 1;
-  order.push(sign);
-  console.log(order);
-  if (!num1 && !num2) {
-    num1 = parseFloat(output.textContent);
-    oper_ = sign;
-    prevOper_ = oper_;
-  } else {
-    if (!num2 && !oper_) {
+  if (operatorPadState === 1) {
+    numPadState = 1;
+    operatorPadState = 0;
+    order.push(sign);
+    console.log(order);
+    calcLog.textContent += " " + sign + " ";
+    if (!num1 && !num2) {
+      num1 = parseFloat(output.textContent);
       oper_ = sign;
-    } else {
-      oper_ = sign;
-      num2 = parseFloat(output.textContent);
-      total = operate(prevOper_, num1, num2);
-      num1 = total;
       prevOper_ = oper_;
-      output.textContent = total;
+    } else {
+      if (!num2 && !oper_) {
+        oper_ = sign;
+      } else {
+        oper_ = sign;
+        num2 = parseFloat(output.textContent);
+        total = roundResult(operate(prevOper_, num1, num2));
+        num1 = total;
+        prevOper_ = oper_;
+        output.textContent = total;
+      }
     }
-  }
-  if (order[0] == "-" && order[1] == "n") {
-    num1 = num1 * -1;
-    order = [];
+    if (order[0] == "-" && order[1] == "n") {
+      num1 = num1 * -1;
+      order = [];
+    }
   }
 }
 
 function equal_operation() {
-  num2 = parseFloat(output.textContent);
-  total = operate(oper_, num1, num2);
-  num1 = total;
-  num2 = undefined;
-  oper_ = undefined;
-  output.textContent = total;
+  if (equalOperatorPadState === 1) {
+    equalOperatorPadState = 0;
+    num2 = parseFloat(output.textContent);
+    total = operate(oper_, num1, num2);
+    num1 = total;
+    num2 = undefined;
+    oper_ = undefined;
+    output.textContent = total;
+  }
 }
 
 function clear_operation() {
@@ -180,8 +190,10 @@ function positive_Negative() {
 }
 
 function percentage_operation() {
-  parseInt((calcLog.textContent += " ÷ 100"));
-  parseInt((output.textContent /= 100));
+  calcLog.textContent += " ÷ 100";
+  total = operators["÷"](parseFloat(output.textContent), 100);
+  output.textContent = total;
+  num1 = total;
 }
 
 function float_operation() {
@@ -189,7 +201,7 @@ function float_operation() {
   output.textContent += ".";
 }
 
-var operators = {
+const operators = {
   "+": function (a, b) {
     return a + b;
   },
@@ -214,10 +226,10 @@ function changeFontSize(fontvar, element) {
 }
 
 function noleak() {
-  if (decimalCount(parseInt(output.textContent)) > 5) {
+  if (decimalCount(total) > 8) {
     output.innerHTML = Math.round(parseFloat(output.textContent));
     calcLog.innerHTML = "&nbsp";
-  } else if (parseFloat(output.textContent) > 1000000) {
+  } else if (parseFloat(total) > 9999999) {
     output.textContent = "NaN";
     output.innerHTML = "&nbsp";
     calcLog.innerHTML = "&nbsp";
@@ -232,4 +244,8 @@ const decimalCount = (num) => {
   return 0;
 };
 
+function roundResult(number) {
+  return Math.round(number * 1000) / 1000;
+}
 console.log(operators["+"](123, 10));
+console.log(decimalCount(0.00001));
